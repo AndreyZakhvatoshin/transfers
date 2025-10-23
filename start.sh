@@ -46,6 +46,15 @@ while ! docker-compose exec -T db pg_isready -U laravel -d laravel_db; do
 done
 echo "✅ PostgreSQL готов к работе"
 
+# Устанавливаем зависимости Composer
+echo "📦 Устанавливаем зависимости Composer..."
+if ! docker-compose exec -T php composer install; then
+    echo "❌ Ошибка при установке зависимостей Composer"
+    docker-compose down 2>/dev/null  # Очищаем контейнеры при ошибке
+    exit 1
+fi
+echo "✅ Зависимости Composer установлены"
+
 # Выполняем миграции
 echo "🔄 Выполняем миграции базы данных..."
 if ! docker-compose exec -T php php artisan migrate --force; then
